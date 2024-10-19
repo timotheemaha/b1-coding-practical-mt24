@@ -82,7 +82,6 @@ class Mission:
         # You are required to implement this method
         # Read the CSV file
         df = pd.read_csv(file_name)
-        
         # Extract columns from the DataFrame and convert them to NumPy arrays
         reference = df['reference'].values
         cave_height = df['cave_height'].values
@@ -109,8 +108,8 @@ class ClosedLoop:
 
         for t in range(T):
             positions[t] = self.plant.get_position()
-            observation_t = self.plant.get_depth()  # output y[t]
-            reference_t = mission.reference[t]      # reference r[t]
+            observation_t = self.plant.get_depth() # output y[t]
+            reference_t = mission.reference[t] # reference r[t]
             # computing error
             error_t = reference_t - observation_t 
             # computing the current input and putting into actions

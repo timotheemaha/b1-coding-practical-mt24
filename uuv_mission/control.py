@@ -2,7 +2,7 @@ class PDController:
     def __init__(self, kp: float, kd: float):
         self.kp = kp
         self.kd = kd
-        self.previous_error = 0 # discrete values for t<0, e[t] = 0
+        self.previous_error = 0 
 
     def compute_curr_input(self, curr_error: float) -> float:
         """
