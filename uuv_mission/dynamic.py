@@ -3,7 +3,10 @@ from dataclasses import dataclass
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from .terrain import generate_reference_and_limits
+from uuv_mission.control import PDController
+
+from uuv_mission.terrain import generate_reference_and_limits
+
 
 class Submarine:
     def __init__(self):
@@ -90,7 +93,7 @@ class Mission:
 
 
 class ClosedLoop:
-    def __init__(self, plant: Submarine, controller):
+    def __init__(self, plant: Submarine, controller: PDController):
         self.plant = plant
         self.controller = controller
 
@@ -101,13 +104,17 @@ class ClosedLoop:
             raise ValueError("Disturbances must be at least as long as mission duration")
         
         positions = np.zeros((T, 2))
-        actions = np.zeros(T)
+        actions = np.zeros(T) # u[t]
         self.plant.reset_state()
 
         for t in range(T):
             positions[t] = self.plant.get_position()
-            observation_t = self.plant.get_depth()
-            # Call your controller here
+            observation_t = self.plant.get_depth()  # output y[t]
+            reference_t = mission.reference[t]      # reference r[t]
+            # computing error
+            error_t = reference_t - observation_t 
+            # computing the current input and putting into actions
+            actions[t] = self.controller.compute_curr_input(error_t)
             self.plant.transition(actions[t], disturbances[t])
 
         return Trajectory(positions)
